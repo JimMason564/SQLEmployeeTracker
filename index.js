@@ -88,10 +88,8 @@ function eeView() {
       LEFT JOIN employee manager
           ON manager.id = employee.manager_id`;
 
-  connection.promise().query(query, (err, res) => {
+  connection.query(query, (err, res) => {
     if (err) throw err;
-    return res
-  }).then(res=> {
     console.table(res);
     startMenu();
   })
@@ -102,19 +100,13 @@ function getDept() {
               department.department_name
               FROM department
               `;
-  connection.promise().query(query, (err, res) => {
+  connection.query(query, (err, res) => {
     if (err) throw err;
-    console.log(res)
-    return res
-  })
-    .then ((res)=> {
-      let dept= [res];
-      console.log(dept)
-      const deptChoices= dept.map(({id,department_name})=>({
-        name: department_name,
-        value: id,
-      }))
-      return deptChoices;
+    const deptChoices = res.map(({ id, department_name,}) => ({
+      value: id,
+      name: department_name
+    }));
+    viewEEbyDept(deptChoices)
     })
     .then ((deptChoices)=> {
       inquirer
