@@ -76,8 +76,8 @@ function eeView() {
           employee.id, 
           employee.first_name, 
           employee.last_name, 
-          role.role_title, 
-          department.department_name, 
+          role.title, 
+          department.name, 
           role.salary,
           CONCAT(manager.first_name, " " ,manager.last_name) AS manager
       FROM employee
@@ -87,75 +87,75 @@ function eeView() {
           ON department.id = role.department_id
       LEFT JOIN employee manager
           ON manager.id = employee.manager_id`;
+   
 
   connection.query(query, (err, res) => {
     if (err) throw err;
     console.table(res);
     startMenu();
-  })
+  });
 }
 
 function getDept() {
   let query = `SELECT department.id,
-              department.department_name
+              department.name
               FROM department
               `;
   connection.query(query, (err, res) => {
     if (err) throw err;
-    const deptChoices = res.map(({ id, department_name,}) => ({
+    const deptChoices = res.map(({ id, name,}) => ({
       value: id,
-      name: department_name
+      name: name
     }));
     viewEEbyDept(deptChoices)
     })
-    .then ((deptChoices)=> {
-      inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "department",
-          message: "Which department?",
-          choices: deptChoices,
-        },
-      ])
-    })
-    .then((res) => {
-      let query = `SELECT 
-                          employee.id, 
-                          employee.first_name, 
-                          employee.last_name, 
-                          role.role_title, 
-                          department.department_name
-                      FROM employee
-                      LEFT JOIN role
-                          ON employee.role_id = role.id
-                      LEFT JOIN department
-                          ON department.id = role.department_id
-                      WHERE department.id = ?`;
-                      let param = res.department
-      connection.query(query, param, (err, res) => {
-        if (err) throw err;
-        startMenu();
-        console.table(res);
-      });
+
+function viewEEbyDept(deptChoices){
+    inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "department",
+        message: "Which department?",
+        choices: deptChoices,
+      },
+    ])
+  .then((res) => {
+    let query = `SELECT 
+                        employee.id, 
+                        employee.first_name, 
+                        employee.last_name, 
+                        role.title, 
+                        department.name
+                    FROM employee
+                    LEFT JOIN role
+                        ON employee.role_id = role.id
+                    LEFT JOIN department
+                        ON department.id = role.department_id
+                    WHERE department.id = ?`;
+    let param = res.department
+    connection.query(query, param, (err, res) => {
+      if (err) throw err;
+      startMenu();
+      console.table(res);
     });
+  });
+  }
 }
 
 function addEE() {
   let query = `SELECT 
           role.id, 
-          role.role_title, 
+          role.title, 
           role.salary 
       FROM role`;
 
   connection.query(query, (err, res) => {
-    if (err) throw err;
-    const role = res.map(({ id, title, salary }) => ({
+    if (err) console.log (err);
+    const role = res.map(({ id, title}) => ({
       value: id,
-      title: `${title}`,
-      salary: `${salary}`,
+      name: `${title}`,
     }));
-
     console.table(res);
     eeRole(role);
   });
@@ -222,7 +222,7 @@ function delEE(employee) {
       {
         type: "list",
         name: "employee",
-        message: "Are you sure you want to delete ",
+        message: "Who would you like to remove?",
         choices: employee,
       },
     ])
@@ -237,48 +237,30 @@ function delEE(employee) {
 
 function updEERole() {
   let query = `SELECT 
-                      employee.id,
-                      employee.first_name, 
-                      employee.last_name, 
-                      role.role_title, 
-                      department.department_name, 
-                      role.salary, 
-                      CONCAT(manager.first_name, ' ', manager.last_name) AS manager
-                  FROM employee
-                  JOIN role
-                      ON employee.role_id = role.id
-                  JOIN department
-                      ON department.id = role.department_id
-                  JOIN employee manager
-                      ON manager.id = employee.manager_id`;
+                      *
+                  FROM employee`;
 
   connection.query(query, (err, res) => {
     if (err) throw err;
     const employee = res.map(({ id, first_name, last_name }) => ({
       value: id,
       name: `${first_name} ${last_name}`,
-    }));
-    console.table(res);
+    }));;
     updRole(employee);
   });
 }
 
 function updRole(employee) {
   let query = `SELECT 
-      role.id, 
-      role.role_title, 
-      role.salary,
-      role.department_id
+     *
     FROM role`;
 
   connection.query(query, (err, res) => {
     if (err) throw err;
-    let roleChoices = res.map(({ id, title, salary }) => ({
+    let roleChoices = res.map(({ id, title}) => ({
       value: id,
-      title: `${title}`,
-      salary: `${salary}`,
+      name: `${title}`,
     }));
-    console.table(res);
     upd(employee, roleChoices);
   });
 }
@@ -301,7 +283,7 @@ function upd(employee, roleChoices) {
     ])
     .then((res) => {
       let query = `UPDATE employee SET role_id = ? WHERE id = ?`;
-      connections.query(query, [res.role, res.employee], (err, res) => {
+      connection.query(query, [res.role, res.employee], (err, res) => {
         if (err) throw err;
         startMenu();
       });
@@ -311,14 +293,14 @@ function upd(employee, roleChoices) {
 function addRole() {
   var query = `SELECT 
         department.id, 
-        department.department_name, 
+        department.name, 
         role.salary
       FROM employee
       JOIN role
         ON employee.role_id = role.id
       JOIN department
         ON department.id = role.department_id
-      GROUP BY department.id, department.department_name`;
+      GROUP BY department.id, department.name`;
 
   connection.query(query, (err, res) => {
     if (err) throw err;
@@ -357,7 +339,7 @@ function adding(department) {
       connection.query(
         query,
         {
-          title: res.role_title,
+          title: res.title,
           salary: res.salary,
           department_id: res.department_id,
         },

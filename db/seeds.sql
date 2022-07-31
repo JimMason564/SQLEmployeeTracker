@@ -1,22 +1,28 @@
-USE employee_db;
-
 INSERT INTO department (name)
 VALUES 
-("Engineering"), 
-("Sales"), 
-("Accounting"), 
-("Human Resources");
+('Engineering'),
+('Finance'),
+('Legal'),
+('Sales');
 
-INSERT INTO role (role_title, salary, department_id)
-VALUES 
-("Lead Software Engineer", 1000000, 1), 
-("Salesperson", 500000, 2), 
-("Lead Accountant", 300000, 3), 
-("Human Resources Director", 120000, 4), 
+INSERT INTO role (title, salary, department_id)
+VALUES
+('Sales Lead', 100000, 4),
+('Salesperson', 80000, 4),
+('Lead Engineer', 150000, 1),
+('Software Engineer', 120000, 1),
+('Account Manager', 160000, 2),
+('Accountant', 125000, 2),
+('Legal Team Lead', 250000, 3),
+('Lawyer', 190000, 3);
 
-INSERT INTO employee (first_name, last_name, role_id)
-VALUES 
-("Richard", "Hendrix", 1), 
-("Jared", "Dunn", 2), 
-("Dinesh", "Chugtai", 3),
-("Gavin", "Belson", 4), 
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES
+('Rachel', 'Green', 1, null),
+('Gunther', 'Centralperk', 2, 1),
+('Ross', 'Geller', 3, null ),
+('Joey', 'Tribbiani', 4, 3),
+('Chandler', 'Bing', 5, null),
+('Monica', 'Geller', 6, 5),
+('Phoebe', 'Buffay', 7, null),
+('Mike', 'Hannigan', 8, 7);
