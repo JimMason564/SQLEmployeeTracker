@@ -1,8 +1,7 @@
-DROP TABLE IF EXISTS employee;
-DROP TABLE IF EXISTS role;
-DROP TABLE IF EXISTS department;
-
+DROP DATABASE IF EXISTS emploee_db;
 CREATE DATABASE employee_db;
+
+USE employee_db;
 
 CREATE TABLE department (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,

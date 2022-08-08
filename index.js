@@ -25,6 +25,8 @@ function startMenu() {
         message: "What would you like to do?",
         choices: [
           "View Employees",
+          "View Roles",
+          "View Departments",
           "Organization Chart",
           "Add Employee",
           "Delete Employee",
@@ -41,24 +43,39 @@ function startMenu() {
         case "View Employees":
           eeView();
           break;
+
+        case "View Roles":
+          viewRoles();
+          break;
+
+        case "View Departments":
+          viewDepts();
+          break;
+
         case "Organization Chart":
           getDept();
           break;
+
         case "Add Employee":
           addEE();
           break;
+
         case "Delete Employee":
           removeEE();
           break;
+
         case "Update Role":
           updEERole();
           break;
+
         case "Add Role":
           addRole();
           break;
+
         case "Add Department":
           addDept();
           break;
+
         case "Exit":
           connection.end();
           break;
@@ -87,11 +104,11 @@ function eeView() {
           ON department.id = role.department_id
       LEFT JOIN employee manager
           ON manager.id = employee.manager_id`;
-   
 
   connection.query(query, (err, res) => {
     if (err) throw err;
     console.table(res);
+    console.log();
     startMenu();
   });
 }
@@ -103,25 +120,25 @@ function getDept() {
               `;
   connection.query(query, (err, res) => {
     if (err) throw err;
-    const deptChoices = res.map(({ id, name,}) => ({
+    const deptChoices = res.map(({ id, name }) => ({
       value: id,
-      name: name
+      name: name,
     }));
-    viewEEbyDept(deptChoices)
-    })
+    viewEEbyDept(deptChoices);
+  });
 
-function viewEEbyDept(deptChoices){
+  function viewEEbyDept(deptChoices) {
     inquirer
-    .prompt([
-      {
-        type: "list",
-        name: "department",
-        message: "Which department?",
-        choices: deptChoices,
-      },
-    ])
-  .then((res) => {
-    let query = `SELECT 
+      .prompt([
+        {
+          type: "list",
+          name: "department",
+          message: "Which department?",
+          choices: deptChoices,
+        },
+      ])
+      .then((res) => {
+        let query = `SELECT 
                         employee.id, 
                         employee.first_name, 
                         employee.last_name, 
@@ -133,13 +150,13 @@ function viewEEbyDept(deptChoices){
                     LEFT JOIN department
                         ON department.id = role.department_id
                     WHERE department.id = ?`;
-    let param = res.department
-    connection.query(query, param, (err, res) => {
-      if (err) throw err;
-      startMenu();
-      console.table(res);
-    });
-  });
+        let param = res.department;
+        connection.query(query, param, (err, res) => {
+          if (err) throw err;
+          startMenu();
+          console.table(res);
+        });
+      });
   }
 }
 
@@ -151,8 +168,8 @@ function addEE() {
       FROM role`;
 
   connection.query(query, (err, res) => {
-    if (err) console.log (err);
-    const role = res.map(({ id, title}) => ({
+    if (err) console.log(err);
+    const role = res.map(({ id, title }) => ({
       value: id,
       name: `${title}`,
     }));
@@ -197,6 +214,40 @@ function eeRole(role) {
       );
     });
 }
+
+const viewRoles = async () => {
+  console.log("View Roles");
+  try {
+    let query = "SELECT * FROM role";
+    connection.query(query, function (err, res) {
+      if (err) throw err;
+      let roleArray = [];
+      res.forEach((role) => roleArray.push(role));
+      console.table(roleArray);
+      startMenu();
+    });
+  } catch (err) {
+    console.log(err);
+    startMenu();
+  }
+};
+
+const viewDepts = async () => {
+  console.log("Departments");
+  try {
+    let query = "SELECT * FROM department";
+    connection.query(query, function (err, res) {
+      if (err) throw err;
+      let departmentArray = [];
+      res.forEach((department) => departmentArray.push(department));
+      console.table(departmentArray);
+      startMenu();
+    });
+  } catch (err) {
+    console.log(err);
+    startMenu();
+  }
+};
 
 function removeEE() {
   let query = `SELECT
@@ -245,7 +296,7 @@ function updEERole() {
     const employee = res.map(({ id, first_name, last_name }) => ({
       value: id,
       name: `${first_name} ${last_name}`,
-    }));;
+    }));
     updRole(employee);
   });
 }
@@ -257,7 +308,7 @@ function updRole(employee) {
 
   connection.query(query, (err, res) => {
     if (err) throw err;
-    let roleChoices = res.map(({ id, title}) => ({
+    let roleChoices = res.map(({ id, title }) => ({
       value: id,
       name: `${title}`,
     }));
