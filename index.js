@@ -88,6 +88,7 @@ function startMenu() {
 
 startMenu();
 
+//View employees
 function eeView() {
   let query = `SELECT 
           employee.id, 
@@ -111,8 +112,8 @@ function eeView() {
     console.log();
     startMenu();
   });
-}
 
+} //View org chart
 function getDept() {
   let query = `SELECT department.id,
               department.name
@@ -127,6 +128,7 @@ function getDept() {
     viewEEbyDept(deptChoices);
   });
 
+  //Inquirer to pull correct dept for org chart function
   function viewEEbyDept(deptChoices) {
     inquirer
       .prompt([
@@ -160,6 +162,7 @@ function getDept() {
   }
 }
 
+//Add employee initial information pull
 function addEE() {
   let query = `SELECT 
           role.id, 
@@ -178,6 +181,7 @@ function addEE() {
   });
 }
 
+// Data to add employee to run with addEE function above
 function eeRole(role) {
   inquirer
     .prompt([
@@ -215,6 +219,7 @@ function eeRole(role) {
     });
 }
 
+//View roles
 const viewRoles = async () => {
   try {
     let query = "SELECT * FROM role";
@@ -231,6 +236,7 @@ const viewRoles = async () => {
   }
 };
 
+//View departments
 const viewDepts = async () => {
   try {
     let query = "SELECT * FROM department";
@@ -247,6 +253,7 @@ const viewDepts = async () => {
   }
 };
 
+//Delete employee
 function removeEE() {
   let query = `SELECT
         employee.id, 
@@ -265,6 +272,7 @@ function removeEE() {
   });
 }
 
+//Inquirer to run with above function to delete employee
 function delEE(employee) {
   inquirer
     .prompt([
@@ -284,6 +292,7 @@ function delEE(employee) {
     });
 }
 
+//Update role functions
 function updEERole() {
   let query = `SELECT 
                       *
@@ -339,33 +348,40 @@ function upd(employee, roleChoices) {
     });
 }
 
+//Add new role
 function addRoles() {
-  inquirer.prompt([
+  inquirer
+    .prompt([
       {
-          type:"input",
-          name:"title",
-          message:"enter role"
+        type: "input",
+        name: "title",
+        message: "enter role",
       },
       {
-          type:"number",
-          name:"salary",
-          message:"enter salary"
+        type: "number",
+        name: "salary",
+        message: "enter salary",
       },
       {
-          type:"number",
-          name:"departmentId",
-          message:"enter department ID"
-      }
- ]).then((res) => {
-  connection.query("INSERT INTO role (title, salary, department_id) VALUES(?, ?, ?)", [res.title, res.salary, res.departmentId],(err, data) => {
-      if (err) throw err;
-      console.table(data);
-      startMenu();
-  })
-})
+        type: "number",
+        name: "departmentId",
+        message: "enter department ID",
+      },
+    ])
+    .then((res) => {
+      connection.query(
+        "INSERT INTO role (title, salary, department_id) VALUES(?, ?, ?)",
+        [res.title, res.salary, res.departmentId],
+        (err, data) => {
+          if (err) throw err;
+          console.table(data);
+          startMenu();
+        }
+      );
+    });
 }
 
-
+// Add new department
 function addDept() {
   inquirer
     .prompt([
