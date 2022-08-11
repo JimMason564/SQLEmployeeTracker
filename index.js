@@ -69,7 +69,7 @@ function startMenu() {
           break;
 
         case "Add Role":
-          addRole();
+          addRoles();
           break;
 
         case "Add Department":
@@ -216,7 +216,6 @@ function eeRole(role) {
 }
 
 const viewRoles = async () => {
-  console.log("View Roles");
   try {
     let query = "SELECT * FROM role";
     connection.query(query, function (err, res) {
@@ -233,7 +232,6 @@ const viewRoles = async () => {
 };
 
 const viewDepts = async () => {
-  console.log("Departments");
   try {
     let query = "SELECT * FROM department";
     connection.query(query, function (err, res) {
@@ -341,66 +339,32 @@ function upd(employee, roleChoices) {
     });
 }
 
-function addRole() {
-  var query = `SELECT 
-        department.id, 
-        department.name, 
-        role.salary
-      FROM employee
-      JOIN role
-        ON employee.role_id = role.id
-      JOIN department
-        ON department.id = role.department_id
-      GROUP BY department.id, department.name`;
-
-  connection.query(query, (err, res) => {
-    if (err) throw err;
-    const department = res.map(({ id, name }) => ({
-      value: id,
-      name: `${id} ${name}`,
-    }));
-    console.table(res);
-    adding(department);
-  });
+function addRoles() {
+  inquirer.prompt([
+      {
+          type:"input",
+          name:"title",
+          message:"enter role"
+      },
+      {
+          type:"number",
+          name:"salary",
+          message:"enter salary"
+      },
+      {
+          type:"number",
+          name:"departmentId",
+          message:"enter department ID"
+      }
+ ]).then((res) => {
+  connection.query("INSERT INTO role (title, salary, department_id) VALUES(?, ?, ?)", [res.title, res.salary, res.departmentId],(err, data) => {
+      if (err) throw err;
+      console.table(data);
+      startMenu();
+  })
+})
 }
 
-function adding(department) {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "title",
-        message: "Role title: ",
-      },
-      {
-        type: "input",
-        name: "salary",
-        message: "Role Salary: ",
-      },
-      {
-        type: "list",
-        name: "department",
-        message: "Department: ",
-        choices: department,
-      },
-    ])
-    .then((res) => {
-      let query = `INSERT INTO role SET ?`;
-
-      connection.query(
-        query,
-        {
-          title: res.title,
-          salary: res.salary,
-          department_id: res.department_id,
-        },
-        (err, res) => {
-          if (err) throw err;
-          startMenu();
-        }
-      );
-    });
-}
 
 function addDept() {
   inquirer

@@ -6,6 +6,9 @@ This is a Node-based employee management app that utilizes MySQL2. This app allo
 ## Technology Used
 Node, MySql2
 
+## Usage
+Users will need to run npm install upon opening repo locally to install all dependencies. They will then need to log into MySql and run the schema and the seeds to set up the initial database. From there, they will type node index.js into the integrated terminal to launch the program. This program is very simple- using the up and down arrow and enter keys to navigate and select options. When an option is selected, the appropriate prompts or data will appear with the menu reloading underneath. When done, the user simply navigates to the exit option, which will end their session.
+
 ## User Story
 ```md
 GIVEN a command-line application that accepts user input
@@ -31,7 +34,7 @@ THEN I am prompted to select an employee to update and their new role and this i
 https://github.com/JimMason564/SQLEmployeeTracker
 
 ## Walkthrough video link
-https://drive.google.com/file/d/14HX2g80GRHbG9jrqighFno9vAURp7qHQ/view
+https://drive.google.com/file/d/1IiTwJlO_X1P0RCCpB8LQJf5SqNwvMj3S/view
 
 ## Screenshot
 ![image](./Documents/SQLTracker.jpeg)
